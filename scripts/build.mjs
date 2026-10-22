@@ -10,9 +10,9 @@ const out = path.resolve('dist');
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const absolute = file => new URL(file, site.url).href;
 const md = new MarkdownIt({html:false, linkify:true, typographer:true});
-const postFiles = (await fs.readdir('.')).filter(f => /^post-.*\.md$/.test(f));
+const postFiles = (await fs.readdir('posts')).filter(f => f.endsWith('.md'));
 const posts = await Promise.all(postFiles.map(async file => {
-  const source = await fs.readFile(file, 'utf8');
+  const source = await fs.readFile(path.join('posts', file), 'utf8');
   const front = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!front) throw new Error(`${file}: 缺少文章开头的 YAML 配置`);
   const data = parseYaml(front[1], { maxAliasCount: 50 });
@@ -20,6 +20,7 @@ const posts = await Promise.all(postFiles.map(async file => {
   const content = source.slice(front[0].length);
   for (const key of ['title','date','slug','category','summary']) if (typeof data[key] !== 'string') throw new Error(`${file}: ${key} 必须是字符串`);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(data.slug)) throw new Error(`${file}: slug 只能包含小写字母、数字和连接号`);
+  if (['index','about','archive','404'].includes(data.slug)) throw new Error(`${file}: slug 与站点页面名称冲突`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date) || Number.isNaN(Date.parse(data.date))) throw new Error(`${file}: 日期不正确`);
   if (!Array.isArray(data.tags) || !data.tags.every(t => typeof t === 'string')) throw new Error(`${file}: tags 必须是文字列表`);
   const tokens = md.parse(content, {});
@@ -55,6 +56,6 @@ await write('about.html',layout('关于',site.description,'about.html',`<section
 await write('404.html',layout('页面未找到',`返回 ${site.title} 继续阅读。`,'404.html',`<section class="site-main wrap not-found"><h1 class="page-title">这页笔记，还没有写到。</h1><p class="page-description">404 · 可能是地址有误，也可能是内容已经移动。</p><a href="${esc(site.url)}">← 回到首页</a></section>`,'').replaceAll('href="style.css"',`href="${esc(absolute('style.css'))}"`).replaceAll('src="app.js"',`src="${esc(absolute('app.js'))}"`).replaceAll('href="index.html',`href="${esc(absolute('index.html'))}`).replaceAll('href="about.html"',`href="${esc(absolute('about.html'))}"`).replaceAll('href="archive.html',`href="${esc(absolute('archive.html'))}`).replaceAll('href="favicon.svg"',`href="${esc(absolute('favicon.svg'))}"`).replaceAll('href="feed.xml"',`href="${esc(absolute('feed.xml'))}"`));
 await write('feed.xml',`<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>${esc(site.title)}</title><link>${esc(site.url)}</link><description>${esc(site.description)}</description><language>zh-cn</language>${posts.map(p=>`<item><title>${esc(p.title)}</title><link>${esc(absolute(p.file))}</link><guid>${esc(absolute(p.file))}</guid><pubDate>${new Date(p.date+'T00:00:00+08:00').toUTCString()}</pubDate><description>${esc(p.summary)}</description><category>${esc(p.category)}</category></item>`).join('')}</channel></rss>`);
 await write('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['index.html','about.html','archive.html',...posts.map(p=>p.file)].map(file=>`<url><loc>${esc(absolute(file))}</loc></url>`).join('')}</urlset>`);
-for(const file of ['style.css','app.js','favicon.svg']) await fs.copyFile(file,path.join(out,file));
+for(const file of ['style.css','app.js','favicon.svg']) await fs.copyFile(path.join('assets',file),path.join(out,file));
 await write('.nojekyll','');
 console.log(`Built ${posts.length} articles and 4 pages → dist/`);
