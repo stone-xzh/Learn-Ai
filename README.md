@@ -1,63 +1,72 @@
+<div align="center">
+
 # Learn Ai
 
-一个轻量的中文 AI 学习笔记博客。使用 Markdown 写文章，由 GitHub Actions 构建并发布到 GitHub Pages。
+**保持好奇，持续记录。**
 
-网站地址：https://stone-xzh.github.io/Learn-Ai/
+关于 AI、代码，以及持续学习的个人笔记。
 
-## 写一篇文章
+[访问博客](https://stone-xzh.github.io/Learn-Ai/) · [开始写作](docs/writing.md) · [文章模板](templates/post.md) · [发布状态](https://github.com/stone-xzh/Learn-Ai/actions)
 
-在仓库根目录新增一个文件，例如 `post-004-my-first-note.md`。文件名必须以 `post-` 开头，以 `.md` 结尾。
+</div>
 
-```markdown
----
-title: "我的第一篇 AI 学习笔记"
-date: "2026-10-22"
-slug: "my-first-note"
-category: "学习方法"
-tags: ["AI 入门", "笔记"]
-summary: "用一句话介绍这篇文章。"
-sample: false
 ---
 
-## 今天想弄清楚的问题
+## 写作，从这里开始
 
-在这里开始写正文。
+日常只需要编辑 **[posts/](posts)** 中的文章。提交后，GitHub Actions 会自动构建并发布网站。
 
-## 我的理解
+1. 复制 **[文章模板](templates/post.md)**。
+2. 在 **[posts/](posts)** 新建 `2026-10-22-my-first-note.md`，修改文章信息并写正文。
+3. 提交到 `main`，等待 **[发布任务](https://github.com/stone-xzh/Learn-Ai/actions)** 出现绿色对勾。
 
-使用 **加粗**、列表、链接和代码块整理笔记。
+详细步骤、字段说明与 Markdown 排版示例，请看 **[写作与发布指南](docs/writing.md)**。
+
+## 目录一览
+
+```text
+Learn-Ai/
+├── posts/                  # 文章：日常写作的地方
+├── templates/
+│   └── post.md             # 新文章模板
+├── docs/
+│   └── writing.md          # 写作与发布指南
+├── assets/                 # 样式、交互脚本和站点图标
+├── scripts/                # 构建与检查脚本
+├── .github/workflows/      # GitHub Pages 自动发布
+├── site.json               # 博客名称、作者、网址等配置
+├── package.json            # 构建命令与依赖
+├── package-lock.json       # 固定依赖版本
+└── README.md               # 当前说明
 ```
 
-- `slug` 是文章的网址文件名，使用小写英文、数字和连接号，不能与其他文章重复。
-- 日期必须使用引号括起来的 `YYYY-MM-DD` 格式。文章按日期从新到旧排列。
-- 分类直接修改 `category`，归档页会自动生成对应筛选按钮。
-- 首页按文章的实际年份分组，日期从新到旧排列。旧的 `featured` 配置仍兼容，但在简洁版中不显示推荐卡片。
-- `sample: true` 表示示例笔记，正式文章用 `false` 或删除该项。
-- 提交到 `main` 分支后，Actions 会自动更新网站。无需服务器，也无需 Docker。
+`dist/` 是本地构建输出，`node_modules/` 是依赖目录，两者都不会提交到仓库。
 
-GitHub 网页操作：仓库首页 → Add file → Create new file → 填写文件名与内容 → Commit changes。
+## 常用修改
 
-## 修改现有文章
+| 想做什么 | 打开哪里 |
+| --- | --- |
+| 新增或修改文章 | [posts/](posts) |
+| 查看发文步骤 | [docs/writing.md](docs/writing.md) |
+| 修改博客名称、作者、正式网址 | [site.json](site.json) |
+| 调整颜色、字号、间距 | [assets/style.css](assets/style.css) |
+| 修改导航、页面布局和关于页正文 | [scripts/build.mjs](scripts/build.mjs) |
+| 查看发布是否成功 | [GitHub Actions](https://github.com/stone-xzh/Learn-Ai/actions) |
 
-打开任意 `post-*.md`，点击编辑按钮，修改正文后提交。三篇起步文章都标注为示例，可以编辑或删除。
+## 博客功能
 
-## 网站配置
+- 按年份排列的文章列表，适配电脑与手机。
+- 归档、分类筛选，以及标题、摘要、标签搜索。
+- 深浅色主题、可展开的文章目录与代码复制。
+- RSS 订阅、网站地图和 404 页面。
+- 使用 Markdown 写作，所有页面资源由本站提供。
 
-- `site.json`：站点信息、正式网址和 GitHub 仓库地址。
-- `style.css`：颜色、布局和手机适配。
-- `app.js`：搜索、分类、主题切换和复制代码。
-- `build.mjs`：页面模板、Markdown 构建、RSS 与网站地图。
-- 站点名称、作者和介绍由 `site.json` 统一读取；关于页正文在 `build.mjs` 中修改。
+起步文章已标注为“示例笔记”，可以替换为自己的内容。搜索不包含正文全文。
 
-## 首次发布
+<details>
+<summary><strong>本地预览与开发</strong></summary>
 
-仓库的 Settings → Pages → Build and deployment → Source 选择 **GitHub Actions**。
-
-工作流文件为 `.github/workflows/pages.yml`。首次启用 Pages 后，在 Actions 中打开 Publish Learn Ai，使用 Run workflow 触发发布；后续推送到 main 会自动运行。
-
-## 本地预览
-
-需要 Node.js 22 或更高版本：
+需要 Node.js 22 或更高版本。以下命令在仓库根目录运行：
 
 ```bash
 npm ci
@@ -66,14 +75,21 @@ npm run check
 python3 -m http.server 8000 --directory dist
 ```
 
-浏览器打开 http://localhost:8000 。`dist/` 是构建结果，不需要手动编辑或提交。
+打开 <http://localhost:8000> 查看。修改源文件后重新运行 `npm run build`，不要直接编辑 `dist/`。
 
-## 功能
+`npm run check` 会检查页面、站内链接、文章锚点与结构化数据。
 
-手机适配、分类筛选、标题/摘要/标签搜索、深浅色切换、文章目录、代码复制、归档、RSS、网站地图与 404 页面。所有浏览器资源来自本站，无外部字体、追踪脚本或运行时 CDN 依赖。
+</details>
 
-首页采用按年份分组的日期与标题列表。搜索和分类集中在归档页；文章标签可以点击检索，目录可以展开。页脚「夜间／日间」切换并记住主题。
+<details>
+<summary><strong>自动发布配置</strong></summary>
 
-视觉参考 [Nan Xiao 的博客](https://nanx.me/blog/)：居中单栏、轻量导航、细分隔线和克制的字体层级。页面代码独立实现，使用系统中文字体，不包含参考站的文章、图片或商业字体。
+发布流程定义在 [pages.yml](.github/workflows/pages.yml)。推送到 `main` 会依次安装依赖、构建、检查，再部署到 GitHub Pages。
 
-搜索在当前的文章元数据中进行，不是正文全文搜索。评论、登录和服务器数据库不包含在本项目中。
+仓库 **Settings → Pages → Source** 使用 **GitHub Actions**，当前已配置完成。
+
+</details>
+
+---
+
+视觉参考 [Nan Xiao 的博客](https://nanx.me/blog/)。页面代码独立实现，使用系统中文字体。
